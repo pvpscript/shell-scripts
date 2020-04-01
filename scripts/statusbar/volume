@@ -1,10 +1,14 @@
 #!/bin/bash
 
 steps=(A B C D)
+mute_icon="M"
 
-vol_perc=$(amixer sget Master | tail -1 | sed 's/.*\[\(.*%\)\].*/\1/')
-vol_int=$(echo $vol_perc | cut -d '%' -f 1)
+#vol_perc=$(amixer sget Master | tail -1 | sed 's/.*\[\(.*%\)\].*/\1/')
+vol_info=$(amixer sget Master | tail -1 | sed 's/.*\[\(.*\)%\].*\[\(.*\)\].*/\1 \2/')
+vol_int=$(echo "$vol_info" | cut -d ' ' -f 1);
+vol_status=$(echo "$vol_info" | cut -d ' ' -f 2);
+
 #icon_index=$(( $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $vol_int )) / 100 ))
 icon_index=$(printf "%.0f" $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $vol_int ))e-2)
 
-echo "${steps[icon_index]} $vol_perc"
+[ "$vol_status" = "on" ] && echo "${steps[icon_index]} $vol_int%" || echo $mute_icon
