@@ -13,5 +13,5 @@ case $location in
 	*) icon="G" ;;
 esac
 
-printf "%s: %s\n" $icon $(df -h $location | awk ' /[0-9]/''{print $4}')
+printf "%s %s\n" $icon $(df -h $location | awk ' /[0-9]/''{print $4}')
 
