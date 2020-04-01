@@ -1,0 +1,10 @@
+#!/bin/bash
+
+steps=(A B C D)
+
+vol_perc=$(amixer sget Master | tail -1 | sed 's/.*\[\(.*%\)\].*/\1/')
+vol_int=$(echo $vol_perc | cut -d '%' -f 1)
+#icon_index=$(( $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $vol_int )) / 100 ))
+icon_index=$(printf "%.0f" $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $vol_int ))e-2)
+
+echo "${steps[icon_index]} $vol_perc"

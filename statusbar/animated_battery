@@ -1,0 +1,37 @@
+#!/bin/bash
+
+bat_dir=/sys/class/power_supply/
+
+steps=(A B C D E F)
+
+function charging() {
+	for s in "${steps[@]}"; do
+		echo $s $2
+		sleep 1
+	done
+}
+
+function discharging() {
+	echo D ${steps[$1]} $2
+}
+
+function unknown() {
+	echo U ${steps[$1]} $2
+}
+
+function not_charging() {
+	echo N ${steps[$1]} $2
+}
+
+declare -A bat_states=(\
+	["Charging"]=charging \
+	["Discharging"]=discharging \
+	["Unknown"]=unknown \
+	["Not charging"]=not_charging)
+
+for bat in ${bat_dir}BAT[0-9]*; do
+	capacity=$(cat ${bat}/capacity)
+	icon_index=$(( $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $capacity )) / 100 ))
+	
+	${bat_states[$(cat ${bat}/status)]} $icon_index $capacity
+done

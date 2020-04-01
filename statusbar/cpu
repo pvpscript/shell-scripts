@@ -1,0 +1,8 @@
+#!/bin/bash
+
+steps=(A B C D)
+
+temp=$(sensors | awk '/Core 0/ {print $3}' | sed 's/^\+\([0-9]*\).*/\1/')
+icon_index=$(printf "%.0f" $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $temp ))e-2)
+
+echo "${steps[icon_index]} $temp°C"

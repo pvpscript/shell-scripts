@@ -1,0 +1,9 @@
+#!/bin/bash
+
+steps=(A B C D)
+
+perc=$(light | cut -d \. -f 1)
+#icon_index=$(( $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $perc )) / 100 ))
+icon_index=$(printf "%.0f" $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $perc ))e-2)
+
+echo "${steps[icon_index]} $perc%"

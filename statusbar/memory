@@ -1,0 +1,5 @@
+#!/bin/bash
+
+perc=$(free -k | awk '/^Mem:/ {print int($3/$2*100)}')
+
+echo $perc%

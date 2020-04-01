@@ -1,0 +1,17 @@
+#!/bin/bash
+
+bat_dir=/sys/class/power_supply/
+
+steps=(A B C D)
+
+declare -A bat_states=(\
+	["Charging"]="C" \
+	["Discharging"]="D" \
+	["Unknown"]="U" \
+	["Not charging"]="N")
+
+for bat in ${bat_dir}BAT[0-9]*; do
+	capacity=$(cat ${bat}/capacity)
+	
+	echo ${bat_states[$(cat ${bat}/status)]} $capacity%
+done
