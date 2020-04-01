@@ -2,4 +2,4 @@
 A repository containing shell scripts that I made for automation, status bar, or simply for testing purposes.
 
 ## Inspiration
-Some of those scripts were inspired by [Luke Smith's LARBS repository](https://github.com/LukeSmithxyz/LARBS).
+Some of those scripts were inspired by [Luke Smith's "voidrice" repository](https://github.com/LukeSmithxyz/voidrice).
