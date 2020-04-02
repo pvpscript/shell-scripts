@@ -3,4 +3,4 @@
 # requires 'statuscolor' patch for dwm
 
 caps=$(xset q | grep Caps | sed 's/.*Caps Lock: *\([a-z]*\) *.*/\1/')
-[ $caps = "on" ] && echo -e "\x04CAPS"
+[ $caps = "on" ] && echo -e "\x04CAPS\x01"
