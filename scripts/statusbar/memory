@@ -1,6 +1,6 @@
 #!/bin/bash
 
-icon="M"
+icon=""
 
 perc=$(free -k | awk '/^Mem:/ {print int($3/$2*100)}')
 

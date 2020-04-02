@@ -8,9 +8,9 @@ location=${1:-/}
 [ -d $location ] || exit
 
 case $location in
-	"/home"* ) icon="H" ;;
-	"/mnt"* ) icon="M" ;;
-	*) icon="G" ;;
+	"/home"* ) icon="" ;;
+	"/mnt"* ) icon="" ;;
+	*) icon="" ;;
 esac
 
 printf "%s %s\n" $icon $(df -h $location | awk ' /[0-9]/''{print $4}')

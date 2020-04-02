@@ -1,7 +1,7 @@
 #!/bin/bash
 
-steps=(A B C D)
-mute_icon="M"
+steps=(奄 奔 墳)
+mute_icon="婢"
 
 #vol_perc=$(amixer sget Master | tail -1 | sed 's/.*\[\(.*%\)\].*/\1/')
 vol_info=$(amixer sget Master | tail -1 | sed 's/.*\[\(.*\)%\].*\[\(.*\)\].*/\1 \2/')

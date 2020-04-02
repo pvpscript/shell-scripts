@@ -2,16 +2,22 @@
 
 bat_dir=/sys/class/power_supply/
 
-steps=(A B C D)
-
-declare -A bat_states=(\
-	["Charging"]="C" \
-	["Discharging"]="D" \
-	["Unknown"]="U" \
-	["Not charging"]="N")
+#discharging_steps=(         )
+discharging_steps=(      )
+charging_steps=(      )
 
 for bat in ${bat_dir}BAT[0-9]*; do
 	capacity=$(cat ${bat}/capacity)
-	
-	echo ${bat_states[$(cat ${bat}/status)]} $capacity%
+
+	if [ $(cat ${bat}/status) = "Charging" ]; then
+		icon_index=$(printf "%.0f" $(( $(( 100 * $(( ${#charging_steps[@]} - 1 ))/100 )) * $capacity ))e-2)
+		echo "${charging_steps[$icon_index]} $capacity%"
+	elif [ $(cat ${bat}/status) = "Discharging" ]; then
+		icon_index=$(printf "%.0f" $(( $(( 100 * $(( ${#discharging_steps[@]} - 1 ))/100 )) * $capacity ))e-2)
+		echo "${discharging_steps[$icon_index]} $capacity%"
+	elif [ $(cat ${bat}/status) = "Not charging" ]; then
+		echo " $capacity%"
+	else #Unknown
+		echo " $capacity%"
+	fi
 done

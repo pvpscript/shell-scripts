@@ -1,15 +1,16 @@
 #!/bin/bash
 
-steps=(A B C D)
+#steps=(A B C D)
+icon="直"
 
 current_quality=$(iwconfig wlp3s0 | grep -i quality | sed 's/^.*\=\([0-9]*\)\/.*$/\1/')
 max_quality=$(iwconfig wlp3s0 | grep -i quality | sed 's/^.*\/\([0-9]*\).*$/\1/')
 
 perc=$((100 * current_quality/max_quality))
 
-icon_index=$(printf "%.0f" $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $perc ))e-2)
+#icon_index=$(printf "%.0f" $(( $(( 100 * $(( ${#steps[@]} - 1 ))/100 )) * $perc ))e-2)
 
-echo "${steps[icon_index]} $perc%"
+echo "$icon $perc%"
 #printf "%s %d%%" $icon "$((100 * current_quality/max_quality))"
 
 
