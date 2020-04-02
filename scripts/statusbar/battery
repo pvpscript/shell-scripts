@@ -16,7 +16,7 @@ for bat in ${bat_dir}BAT[0-9]*; do
 		icon_index=$(printf "%.0f" $(( $(( 100 * $(( ${#discharging_steps[@]} - 1 ))/100 )) * $capacity ))e-2)
 		echo "${discharging_steps[$icon_index]} $capacity%"
 	elif [ $(cat ${bat}/status) = "Full" ]; then
-		echo " $capacity%"
+		echo " $capacity%"
 	elif [ $(cat ${bat}/status) = "Not charging" ]; then
 		echo " $capacity%"
 	else #Unknown
