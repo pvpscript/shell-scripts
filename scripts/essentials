@@ -1,0 +1,86 @@
+#!/bin/sh
+
+die() {
+	echo "$1"
+	exit
+}
+
+[ $(whoami) != "root" ] && die "must be root!"
+[ -z "$1" ] && die "provide username!"
+[ -z $(id -u "$1" 2>/dev/null) ] && die "username $1 doesn't exist!"
+
+home="/home/$1" # $1 must be the username, to access the home directory
+
+############################## Custom instalations ##############################
+suckless() {
+	suckless="dmenu; dmw; st; dmwblocks; slock; surf"
+
+	mkdir $home/suckless ; cd $home/suckless
+	
+	for rep in ${suckless}; do
+		git clone https://github.com/pvpscript/$rep
+		cd $rep
+		make
+		make install
+		cd ..
+	done
+}
+
+nerd_fonts() {
+	cd $home
+
+	git clone https://github.com/ryanoasis/nerd-fonts
+	cd nerd-fonts
+	./install.sh DejaVuSansMono
+	./install.sh Inconsolata
+	./install.sh Overpass
+	./install.sh Noto
+	./install.sh Hack
+	cd ..
+	rm -rf ./nerd-fonts
+}
+################################################################################
+
+# Installer 
+install() {
+	for i in ${@}; do
+		pacman -S $i
+	done
+
+	nerd_fonts
+}
+
+if [ ! -z $(command -v pacman) ]; then
+       	primary="git; base-devel; man-pages; wget; bash-completion"
+	fonts="ttf-dejavu; ttf-inconsolata; ttf-overpass; ttf-crosscore; noto-fonts"
+	X="xclip; xcompmgr; xdotool; "
+	editors="vi; vim; neovim"
+	python="python2; python2-pip; python3; python-pip"
+	other_languages="lua; ruby; perl"
+	math="octave; r; qalculate"
+	media="scrot; ffmpeg; alsa-utils; mpv"
+	others="light; calcurse; dunst; newsboat; sysstat; perl-image-exiftool; klavaro"
+elif [ ! -z $(command -v apt) ]; then
+	echo Not done yet ; exit
+       	primary="git; build-essential; manpages; manpages-dev; wget; bash-completion"
+	#fonts="ttf-dejavu; fonts-inconsolata; ttf-overpass; fonts-croscore; fonts-noto-core"
+	#X="xclip; xcompmgr; xdotool; "
+	#editors="vi; vim; neovim"
+	#python="python2; python2-pip; python3; python-pip"
+	#other_languages="lua; ruby; perl"
+	#math="octave; r; qalculate"
+	#media="scrot; ffmpeg; alsa-utils; mpv"
+	#others="light; calcurse; dunst; newsboat; sysstat; perl-image-exiftool; klavaro"
+else
+	echo "Using other package manager other than 'pacman' or 'apt'"
+fi
+
+install $primary
+install $fonts
+install $X
+install $editors
+install $python
+install $other_languages
+install $math
+install $media
+install $others
