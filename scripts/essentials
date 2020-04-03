@@ -51,7 +51,7 @@ install() {
 }
 
 if [ ! -z $(command -v pacman) ]; then
-       	primary="git; base-devel; man-pages; wget; bash-completion"
+       	primary="git; base-devel; man-pages; wget; bash-completion; udisks2"
 	fonts="ttf-dejavu; ttf-inconsolata; ttf-overpass; ttf-crosscore; ttf-joypixels; noto-fonts"
 	X="xclip; xcompmgr; xdotool; "
 	editors="vi; vim; neovim"
