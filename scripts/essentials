@@ -56,6 +56,7 @@ if [ ! -z $(command -v pacman) ]; then
        	primary="git; base-devel; man-pages; wget; bash-completion"
 	fonts="ttf-dejavu; ttf-inconsolata; ttf-overpass; ttf-crosscore; ttf-joypixels; noto-fonts"
 	X="xclip; xcompmgr; xdotool; "
+	wifi="wireless_tools"
 	editors="vi; vim; neovim"
 	python="python2; python2-pip; python3; python-pip"
 	other_languages="lua; ruby; perl"
@@ -83,6 +84,7 @@ fi
 install $primary
 install $fonts
 install $X
+install $wireless_tools
 install $editors
 install $workflow
 install $reader
