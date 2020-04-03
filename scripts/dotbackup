@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# backups my important dotfiles to the current dir
+
+echo "Config files will be backed up to the current directory!"
+echo "Current directory is: $PWD"
+echo -e "\\nwish to continue? (y/n)" ; read op
+[ "$( echo $op | tr '[A-Z]' '[a-z]')" != "y" ] && exit
+
+cp ~/.tmux.conf $PWD # tmux config file
+cp ~/.xinitrc $PWD # startx config file
+cp ~/.profile $PWD # path configs and other variable definitions
+cp ~/.xprofile $PWD # daemons to be run on startup 
+cp ~/.zprofile $PWD # zsh startup config
+
+cp -r ~/.config $PWD # config files directory
