@@ -60,6 +60,7 @@ if [ ! -z $(command -v pacman) ]; then
 	workflow="tmux; zsh"
 	math="octave; r; qalculate"
 	media="scrot; ffmpeg; alsa-utils; mpv; mpd"
+	image_editors="gimp; inkscape"
 	reader="zathura; zathura-pdf-mupdf; zathura-pdf-poppler"
 	others="light; calcurse; dunst; newsboat; sysstat; perl-image-exiftool; klavaro"
 elif [ ! -z $(command -v apt) ]; then
@@ -87,4 +88,5 @@ install $python
 install $other_languages
 install $math
 install $media
+install $image_editors
 install $others
