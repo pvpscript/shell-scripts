@@ -57,8 +57,10 @@ if [ ! -z $(command -v pacman) ]; then
 	editors="vi; vim; neovim"
 	python="python2; python2-pip; python3; python-pip"
 	other_languages="lua; ruby; perl"
+	workflow="tmux; zsh"
 	math="octave; r; qalculate"
-	media="scrot; ffmpeg; alsa-utils; mpv"
+	media="scrot; ffmpeg; alsa-utils; mpv; mpd"
+	reader="zathura; zathura-pdf-mupdf; zathura-pdf-poppler"
 	others="light; calcurse; dunst; newsboat; sysstat; perl-image-exiftool; klavaro"
 elif [ ! -z $(command -v apt) ]; then
 	echo Not done yet ; exit
@@ -79,6 +81,8 @@ install $primary
 install $fonts
 install $X
 install $editors
+install $workflow
+install $reader
 install $python
 install $other_languages
 install $math
