@@ -1,1 +1,5 @@
+#!/bin/sh
+
+# Shows up in the notifications the 10 programs that are using the most CPU
+
 notify-send "$(ps axch -o cmd:15,%cpu --sort=-%cpu | head)"
