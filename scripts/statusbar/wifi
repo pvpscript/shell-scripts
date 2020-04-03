@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Display the wifi signal strength in percentage.
+
+# require: wireless_tools
+
 #steps=(A B C D)
 icon="直"
 

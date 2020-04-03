@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Install the programs that I mostly use
+
 die() {
 	echo "$1"
 	exit

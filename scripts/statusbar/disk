@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Status bar module for disk space
+# Status bar module for displaying the disk space
 # $1 should be drive mountpoint, otherwise assumed /.
 
 location=${1:-/}

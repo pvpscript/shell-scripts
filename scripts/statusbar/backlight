@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Display the backlight percentage.
+
+# require: light
+
 steps=(               )
 
 perc=$(light | cut -d \. -f 1)

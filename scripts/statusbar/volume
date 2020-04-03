@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Display the current volume percentage.
+# It can also change if the audio is muted!
+
 steps=(奄 奔 墳)
 mute_icon="婢"
 
