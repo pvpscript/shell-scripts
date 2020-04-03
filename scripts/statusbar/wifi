@@ -3,8 +3,10 @@
 #steps=(A B C D)
 icon="直"
 
-current_quality=$(iwconfig wlp3s0 | grep -i quality | sed 's/^.*\=\([0-9]*\)\/.*$/\1/')
+current_quality=$(iwconfig wlp3s0 | grep -i quality | sed 's/^.*\=\([0-9]*\)\/.*$/\1/') 
 max_quality=$(iwconfig wlp3s0 | grep -i quality | sed 's/^.*\/\([0-9]*\).*$/\1/')
+[ -z $current_quality ] && current_quality=0
+[ -z $max_quality ] && max_quality=1
 
 perc=$((100 * current_quality/max_quality))
 
@@ -12,5 +14,3 @@ perc=$((100 * current_quality/max_quality))
 
 echo "$icon $perc%"
 #printf "%s %d%%" $icon "$((100 * current_quality/max_quality))"
-
-
