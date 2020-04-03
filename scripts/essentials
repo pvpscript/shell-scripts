@@ -55,7 +55,7 @@ install() {
 if [ ! -z $(command -v pacman) ]; then
        	primary="git; base-devel; man-pages; wget; bash-completion"
 	fonts="ttf-dejavu; ttf-inconsolata; ttf-overpass; ttf-crosscore; ttf-joypixels; noto-fonts"
-	X="xclip; xcompmgr; xdotool; "
+	X="xclip; xcompmgr; xdotool; xwallpaper; sxiv"
 	wifi="wireless_tools"
 	editors="vi; vim; neovim"
 	python="python2; python2-pip; python3; python-pip"
