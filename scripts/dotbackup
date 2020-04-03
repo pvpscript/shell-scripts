@@ -12,5 +12,6 @@ cp ~/.xinitrc $PWD # startx config file
 cp ~/.profile $PWD # path configs and other variable definitions
 cp ~/.xprofile $PWD # daemons to be run on startup 
 cp ~/.zprofile $PWD # zsh startup config
+cp ~/.bashrc $PWD # bash startup config
 
 cp -r ~/.config $PWD # config files directory
