@@ -7,4 +7,4 @@
 
 # Require: pywal; dwm fsignal patch with xrdb
 
-[ -f "$1" ] && wal -s -n -t -i $(readlink -f "$1") > /dev/null 2>&1 || wal -R ; xsetroot -name "fsignal:xrdb"
+[ -f "$1" ] && wal -s -n -t -i $(readlink -f "$1") > /dev/null 2>&1 || wal -sntR ; xsetroot -name "fsignal:xrdb"
