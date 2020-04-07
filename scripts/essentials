@@ -54,6 +54,7 @@ if [ ! -z $(command -v pacman) ]; then
        	primary="git; base-devel; man-pages; wget; bash-completion; udisks2"
 	fonts="ttf-dejavu; ttf-inconsolata; ttf-overpass; ttf-crosscore; ttf-joypixels; noto-fonts"
 	X="xclip; xcompmgr; xdotool; "
+	shell="zsh; dash; shellcheck"
 	editors="vi; vim; neovim"
 	python="python2; python2-pip; python3; python-pip"
 	other_languages="lua; ruby; perl"
@@ -78,6 +79,7 @@ fi
 install $primary
 install $fonts
 install $X
+install $shell
 install $editors
 install $python
 install $other_languages
