@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# My personal runner script for pywal
+# This script run pywal on the given image file and sends a notification to dwm
+
+# Require: pywal; dwm fsignal patch with xrdb
+
+[ -f "$1" ] && wal -s -n -t -i $(readlink -f "$1") > /dev/null 2>&1 && xsetroot -name "fsignal:xrdb"
