@@ -45,43 +45,45 @@ nerd_fonts() {
 
 # Installer 
 install() {
+	IFS=';'
+
 	for i in ${@}; do
 		pacman -S $i
 	done
-
-	nerd_fonts
 }
 
 if [ ! -z $(command -v pacman) ]; then
-       	primary="git; base-devel; man-pages; wget; bash-completion; udisks2"
-	fonts="ttf-dejavu; ttf-inconsolata; ttf-overpass; ttf-crosscore; ttf-joypixels; noto-fonts"
-	X="xclip; xcompmgr; xdotool; xwallpaper; sxiv"
-	shell="zsh; dash; shellcheck"
+       	primary="git;base-devel;man-pages;wget;bash-completion;udisks2"
+	fonts="ttf-dejavu;ttf-inconsolata;ttf-overpass;ttf-crosscore;ttf-joypixels;noto-fonts"
+	X="xclip;xcompmgr;xdotool;xwallpaper;sxiv"
+	shell="zsh;dash;shellcheck"
 	wifi="wireless_tools"
-	editors="vi; vim; neovim"
-	python="python2; python2-pip; python3; python-pip"
-	other_languages="lua; ruby; perl"
+	networking="traceroute;gnu-netcat;nmap;whois"
+	editors="vi;vim;neovim"
+	python="python2;python2-pip;python3;python-pip"
+	other_languages="lua;ruby;perl"
 	workflow="tmux"
-	math="octave; r; qalculate"
-	media="scrot; ffmpeg; alsa-utils; mpv; mpd; mpc; ncmpcpp"
-	image_editors="gimp; inkscape"
-	reader="zathura; zathura-pdf-mupdf; zathura-pdf-poppler"
-	others="light; calcurse; dunst; newsboat; sysstat; perl-image-exiftool; klavaro; python-pywal"
+	math="octave;r;qalculate"
+	media="scrot;ffmpeg;alsa-utils;mpv;mpd;mpc;ncmpcpp"
+	image_editors="gimp;inkscape"
+	reader="zathura;zathura-pdf-mupdf;zathura-pdf-poppler"
+	others="light;calcurse;dunst;newsboat;sysstat;perl-image-exiftool;klavaro;python-pywal"
 elif [ ! -z $(command -v apt) ]; then
 	echo Not done yet ; exit
-       	primary="git; build-essential; manpages; manpages-dev; wget; bash-completion"
-	#fonts="ttf-dejavu; fonts-inconsolata; ttf-overpass; fonts-croscore; fonts-noto-core"
-	#X="xclip; xcompmgr; xdotool; "
-	#editors="vi; vim; neovim"
-	#python="python2; python2-pip; python3; python-pip"
-	#other_languages="lua; ruby; perl"
-	#math="octave; r; qalculate"
-	#media="scrot; ffmpeg; alsa-utils; mpv"
-	#others="light; calcurse; dunst; newsboat; sysstat; perl-image-exiftool; klavaro"
+       	primary="git;build-essential;manpages;manpages-dev;wget;bash-completion"
+	#fonts="ttf-dejavu;fonts-inconsolata;ttf-overpass;fonts-croscore;fonts-noto-core"
+	#X="xclip;xcompmgr;xdotool;"
+	#editors="vi;vim;neovim"
+	#python="python2;python2-pip;python3;python-pip"
+	#other_languages="lua;ruby;perl"
+	#math="octave;r;qalculate"
+	#media="scrot;ffmpeg;alsa-utils;mpv"
+	#others="light;calcurse;dunst;newsboat;sysstat;perl-image-exiftool;klavaro"
 else
 	echo "Using other package manager other than 'pacman' or 'apt'"
 fi
 
+suckless
 install $primary
 install $fonts
 install $X
@@ -96,3 +98,4 @@ install $math
 install $media
 install $image_editors
 install $others
+nerdfonts
