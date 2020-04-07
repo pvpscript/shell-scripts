@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Install the programs that I mostly use
+
 die() {
 	echo "$1"
 	exit
@@ -53,13 +55,17 @@ install() {
 if [ ! -z $(command -v pacman) ]; then
        	primary="git; base-devel; man-pages; wget; bash-completion; udisks2"
 	fonts="ttf-dejavu; ttf-inconsolata; ttf-overpass; ttf-crosscore; ttf-joypixels; noto-fonts"
-	X="xclip; xcompmgr; xdotool; "
+	X="xclip; xcompmgr; xdotool; xwallpaper; sxiv"
 	shell="zsh; dash; shellcheck"
+	wifi="wireless_tools"
 	editors="vi; vim; neovim"
 	python="python2; python2-pip; python3; python-pip"
 	other_languages="lua; ruby; perl"
+	workflow="tmux; zsh"
 	math="octave; r; qalculate"
-	media="scrot; ffmpeg; alsa-utils; mpv"
+	media="scrot; ffmpeg; alsa-utils; mpv; mpd"
+	image_editors="gimp; inkscape"
+	reader="zathura; zathura-pdf-mupdf; zathura-pdf-poppler"
 	others="light; calcurse; dunst; newsboat; sysstat; perl-image-exiftool; klavaro"
 elif [ ! -z $(command -v apt) ]; then
 	echo Not done yet ; exit
@@ -80,9 +86,13 @@ install $primary
 install $fonts
 install $X
 install $shell
+install $wifi
 install $editors
+install $workflow
+install $reader
 install $python
 install $other_languages
 install $math
 install $media
+install $image_editors
 install $others

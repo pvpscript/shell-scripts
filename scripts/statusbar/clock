@@ -1,3 +1,5 @@
 #!/bin/sh
 
+# Display the time and date in a custom format.
+
 date +"%d/%m/%Y (%a) %H:%M"

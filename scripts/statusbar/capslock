@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# requires 'statuscolor' patch for dwm
+# Display a text if the capslock is on.
+
+# requires: 'statuscolor' patch for dwm
 
 caps=$(xset q | grep Caps | sed 's/.*Caps Lock: *\([a-z]*\) *.*/\1/')
 [ $caps = "on" ] && echo -e "\x04CAPS\x01"
