@@ -61,7 +61,7 @@ if [ ! -z $(command -v pacman) ]; then
 	editors="vi; vim; neovim"
 	python="python2; python2-pip; python3; python-pip"
 	other_languages="lua; ruby; perl"
-	workflow="tmux; zsh"
+	workflow="tmux"
 	math="octave; r; qalculate"
 	media="scrot; ffmpeg; alsa-utils; mpv; mpd"
 	image_editors="gimp; inkscape"
