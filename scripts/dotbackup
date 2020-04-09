@@ -1,17 +1,26 @@
 #!/bin/sh
 
-# backups my important dotfiles to the current dir
+# backups dotfiles
 
-echo "Config files will be backed up to the current directory!"
-echo "Current directory is: $PWD"
-echo -e "\\nwish to continue? (y/n)" ; read op
-[ "$( echo $op | tr '[A-Z]' '[a-z]')" != "y" ] && exit
+die() {
+	echo "$1"
+	exit 1
+}
 
-cp ~/.tmux.conf $PWD # tmux config file
-cp ~/.xinitrc $PWD # startx config file
-cp ~/.profile $PWD # path configs and other variable definitions
-cp ~/.xprofile $PWD # daemons to be run on startup 
-cp ~/.zprofile $PWD # zsh startup config
-cp ~/.bashrc $PWD # bash startup config
+[ -z "$1" ] && die "It's necessary to provide a directory for the backup."
 
-cp -r ~/.config $PWD # config files directory
+dir=$(readlink -f "$1")
+
+printf "%s\n" "Config files are going to be backed up."
+printf "%s\n" "The chosen directory for the backup is: \"$dir\""
+printf "\n%s" "wish to continue? (y/n)" ; read op
+[ "$(printf $op | tr '[A-Z]' '[a-z]')" != "y" ] && exit 0
+
+#cp "$HOME/.tmux.conf" "$dir" # tmux config file
+cp "$HOME/.xinitrc" "$dir" # startx config file
+cp "$HOME/.profile" "$dir" # path configs and other variable definitions
+cp "$HOME/.xprofile" "$dir" # daemons to be run on startup 
+#cp "$HOME/.zprofile" "$dir" # zsh startup config
+cp "$HOME/.bashrc" "$dir" # bash startup config
+
+cp -r "$HOME/.config" "$dir" # config files directory
