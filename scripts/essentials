@@ -59,7 +59,7 @@ if [ ! -z $(command -v pacman) ]; then
 	file_manager="ranger"
 	shell="zsh;dash;shellcheck"
 	wifi="wireless_tools"
-	networking="traceroute;gnu-netcat;nmap;whois;iproute2"
+	networking="traceroute;gnu-netcat;nmap;whois;iproute2;wireshark-cli"
 	editors="vi;vim;neovim"
 	python="python2;python2-pip;python3;python-pip"
 	other_languages="lua;ruby;perl"
