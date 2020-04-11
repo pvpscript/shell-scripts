@@ -43,7 +43,7 @@ nerd_fonts() {
 }
 
 ranger_devicons() {
-	cd $HOME
+	cd $home
 
 	mkdir clones
 	cd ./clones
@@ -52,7 +52,7 @@ ranger_devicons() {
 	cd ranger_devicons
 	make install
 
-	cd $HOME
+	cd $home
 }
 ################################################################################
 
