@@ -12,16 +12,17 @@ die() {
 [ -z $(id -u "$1" 2>/dev/null) ] && die "username $1 doesn't exist!"
 
 home="/home/$1" # $1 must be the username, to access the home directory
+clone_dir="clones"
 
 ############################## Custom instalations ##############################
 suckless() {
 	suckless="dmenu; dmw; st; dmwblocks; slock; surf"
 
-	mkdir $home/suckless ; cd $home/suckless
+	mkdir -p "$home/$clone_dir/suckless" ; cd "$home/$clone_dir/suckless"
 	
 	for rep in ${suckless}; do
 		git clone https://github.com/pvpscript/$rep
-		cd $rep
+		cd ./"$rep"
 		make
 		make install
 		cd ..
@@ -29,7 +30,10 @@ suckless() {
 }
 
 nerd_fonts() {
-	cd $home
+	cd "$home"
+
+	mkdir "$clone_dir" 
+	cd "./$clone_dir"
 
 	git clone https://github.com/ryanoasis/nerd-fonts
 	cd nerd-fonts
@@ -43,16 +47,16 @@ nerd_fonts() {
 }
 
 ranger_devicons() {
-	cd $home
+	cd "$home"
 
-	mkdir clones
-	cd ./clones
+	mkdir "$clone_dir"
+	cd "./$clone_dir"
 
 	git clone https://github.com/alexanderjeurissen/ranger_devicons
 	cd ranger_devicons
 	make install
 
-	cd $home
+	cd "$home"
 }
 ################################################################################
 
