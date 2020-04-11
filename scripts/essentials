@@ -41,6 +41,19 @@ nerd_fonts() {
 	cd ..
 	rm -rf ./nerd-fonts
 }
+
+ranger_devicons() {
+	cd $HOME
+
+	mkdir clones
+	cd ./clones
+
+	git clone https://github.com/alexanderjeurissen/ranger_devicons
+	cd ranger_devicons
+	make install
+
+	cd $HOME
+}
 ################################################################################
 
 # Installer 
@@ -101,3 +114,4 @@ install $media
 install $image_editors
 install $others
 nerdfonts
+ranger_devicons
