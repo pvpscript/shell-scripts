@@ -2,7 +2,7 @@
 #
 # A script to dismount mounted partitions
 
-EXCLUDE="$(echo ${@:-sda} | sed 's/\(sd.[0-9]*\) \+/(\1)|/g;s/\(sd.[0-9]*\)$/(\1)/g')"
+EXCLUDE="$(echo "${@:-sda}" | sed 's/\(sd.[0-9]*\) \+/(\1)|/g;s/\(sd.[0-9]*\)$/(\1)/g')"
 
 SIZE_PADDING=$(lsblk -rn --paths -o SIZE | awk '{ printf "%s\n", length($1) }' | sort -r -n | head -1)
 NAME_PADDING=$(lsblk -rn --paths -o NAME | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
@@ -14,8 +14,8 @@ mntd=$(lsblk -rn --paths -o SIZE,NAME,MOUNTPOINT |
 		set -- $line
 		if [ -n "$3" ];
 		then
-			echo "$2" | grep -qiE $EXCLUDE
-			[ $? -gt 0 ] && printf "%-*s - %-*s -> %s\n" $SIZE_PADDING "$1" $NAME_PADDING "[$2]" "$3"
+			echo "$2" | grep -qiE "$EXCLUDE"
+			[ $? -eq 1 ] && printf "%-*s - %-*s -> %s\n" $SIZE_PADDING "$1" $NAME_PADDING "[$2]" "$3"
 		fi
 	done | dmenu -p "Dismount a partition" -l 20)
 
