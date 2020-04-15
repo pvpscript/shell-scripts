@@ -2,10 +2,10 @@
 #
 # A script to dismount mounted partitions
 
-PADDING=$(lsblk -r --paths -o NAME,MOUNTPOINT | tail +2 | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
+PADDING=$(lsblk -rn --paths -o NAME,MOUNTPOINT | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
 # length($1)+2 for the characters '[' and ']' in the printf below
 
-mntd=$(lsblk -r --paths -o NAME,MOUNTPOINT | tail +2 |
+mntd=$(lsblk -rn --paths -o NAME,MOUNTPOINT |
 	while IFS= read -r line;
 	do
 		set -- $line
