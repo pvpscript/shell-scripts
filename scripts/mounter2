@@ -1,0 +1,87 @@
+#!/bin/bash
+
+BY_LABEL=/dev/disk/by-label
+BY_ID=/dev/disk/by-id
+
+DEVICES=""
+while IFS= read -r line;
+do
+	DEVICES="${DEVICES:+${DEVICES} }${line}"
+done <<< $(find /dev/sd?)
+
+declare -A parts
+
+if [ -d $BY_LABEL ];
+then
+	while IFS= read -r line;
+	do
+		name=$(printf "$line" | cut -d ' ' -f 1);
+		part=$(printf "$line" | cut -d ' ' -f 2);
+	
+		part_dev=$(printf "$part" | sed s'/\([a-zA-Z]*\)[0-9]\+$/\1/')
+
+		#echo "XIS -> $name -> $part -> $part_dev"
+
+		for d in $DEVICES; do
+			[ $part_dev = $d ] && parts["$d"]="${parts[$d]:+${parts[$d]}|}${name##*/} $part"
+		done
+	done <<< $(find $BY_LABEL -type l -printf "%p " -exec readlink -f {} \;)
+fi
+
+if [ -d $BY_ID ];
+then
+	while IFS= read -r line;
+	do
+		name=$(printf "$line" | cut -d ' ' -f 1);
+		part=$(printf "$line" | cut -d ' ' -f 2);
+		part_type=$(lsblk $part -o TYPE | tail +2 | head -1)
+		joined_uuid=$(lsblk $part -o UUID | tail +2 | tr -d '\n')
+		part_dev=$(printf "$part" | sed s'/\([a-zA-Z]*\)[0-9]\+$/\1/')
+
+#		echo "DEH -> $name -> $part -> $part_dev"
+
+		IFS=" "
+		(([ ${part_type,,} = "disk" ] && [ $(lsblk $part -o NAME | tail +3 | wc -l) -eq 0 ]) \
+			|| [ ${part_type,,} != "disk" ]) \
+			&& [ ! -z $joined_uuid ] && for d in $DEVICES;
+		do
+#			[ $part_dev = $d ] && parts["$d"]="${parts[$d]:+${parts[$d]}|}${name##*/} $part"
+			if [ $part_dev = $d ];
+			then
+				have_part=0
+
+				IFS="|"
+				for dev in ${parts["$d"]};
+				do
+					have_part=0
+
+					IFS=" "
+					for c_part in $dev;
+					do
+						[ $part = $c_part ] && have_part=1 && break
+					done
+
+					[ "$have_part" -eq 1 ] && break 
+
+				done
+
+				[ "$have_part" -eq 0 ] && parts["$d"]="${parts[$d]:+${parts[$d]}|}${name##*/} $part"
+
+			fi
+		done
+	done <<< $(find $BY_ID -type l ! -name "wwn*" -printf "%p " -exec readlink -f {} \;)
+fi
+
+for key in ${!parts[@]};
+do
+	IFS="|"
+	for dev in ${parts[$key]};
+	do
+		IFS=" "
+		for part in $dev;
+		do
+			true
+			echo "$key -> $part"
+		done
+	done
+done
