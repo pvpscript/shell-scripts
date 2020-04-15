@@ -94,7 +94,9 @@ IFS="|"
 
 [ -n "$dev" ] && mnt_point=$(find "$DMD" -mindepth 1 -maxdepth 1 -type d -printf "%P\n" |
 	while IFS= read -r line; do
-		printf "%s\n" "$line";
+		if ! mountpoint -q -- "$DMD/$line"; then
+			printf "%s\n" "$line";
+		fi
 	done | dmenu -p "Choose a mouting point (current dir: \"$DMD\")" -l 20)
 
 if [ -n "$mnt_point" ];
