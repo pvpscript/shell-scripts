@@ -2,14 +2,15 @@
 #
 # A script to dismount mounted partitions
 
-PADDING=$(lsblk -rn --paths -o NAME,MOUNTPOINT | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
+SIZE_PADDING=$(lsblk -rn --paths -o SIZE | awk '{ printf "%s\n", length($1) }' | sort -r -n | head -1)
+NAME_PADDING=$(lsblk -rn --paths -o NAME | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
 # length($1)+2 for the characters '[' and ']' in the printf below
 
-mntd=$(lsblk -rn --paths -o NAME,MOUNTPOINT |
+mntd=$(lsblk -rn --paths -o SIZE,NAME,MOUNTPOINT |
 	while IFS= read -r line;
 	do
 		set -- $line
-		[ -n "$2" ] && printf "%-*s -> %s\n" $PADDING "[$1]" "$2"
+		[ -n "$3" ] && printf "%-*s - %-*s -> %s\n" $SIZE_PADDING "$1" $NAME_PADDING "[$2]" "$3"
 	done | dmenu -p "Dismount a partition" -l 20)
 
 [ -n "$mntd" ] && sudo umount "$(echo "$mntd" | sed 's/.*\[\(.*\)\].*/\1/')"
