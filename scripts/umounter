@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# A script to dismount mounted partitions
+
+mntd=$(lsblk -r --paths -o NAME,MOUNTPOINT | tail +2 |
+	while IFS= read -r line;
+	do
+		set -- $line
+		[ -n "$2" ] && printf "[%s] -> %s\n" "$1" "$2"
+	done | dmenu -p "Dismount a partition" -l 20)
+
+sudo umount "$(echo "$mntd" | sed 's/.*\[\(.*\)\].*/\1/')"
