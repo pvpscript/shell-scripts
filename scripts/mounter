@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# A script that displays all disks and partitions available to mounting.
+# It works by showing disks first, and then the partitions of the selected disk.
+#
+#
+# >> Needs to be run as root <<
+#
+#
+# Shown format: SIZE - [DISK] -> ID/LABEL
+#
+# Caveats: If the disk or partition label contains a '|' (pipe) it will brake
+# the names parser, since the pipe character is used as delimiter.
+
+DMD=${1:-/mnt} # Default Mount Directory
+
 BY_LABEL=/dev/disk/by-label
 BY_ID=/dev/disk/by-id
 
@@ -7,76 +21,81 @@ DEVICES=""
 while IFS= read -r line;
 do
 	DEVICES="${DEVICES:+${DEVICES} }${line}"
-done <<< $(find /dev/sd?)
+done <<< "$(find /dev/sd?)"
 
 declare -A parts
 
-if [ -d $BY_LABEL ];
+if [ -d "$BY_LABEL" ];
 then
 	while IFS= read -r line;
 	do
-		name=$(printf "$line" | cut -d ' ' -f 1);
-		part=$(printf "$line" | cut -d ' ' -f 2);
-		part_dev=$(printf "$part" | sed s'/\([a-zA-Z]*\)[0-9]\+$/\1/')
+		name=$(printf "%s" "$line" | cut -d ' ' -f 1);
+		part=$(printf "%s" "$line" | cut -d ' ' -f 2);
+		part_dev=$(printf "%s" "$part" | sed s'/\([a-zA-Z]*\)[0-9]\+$/\1/')
 
-		size=$(lsblk $part -o SIZE | tail +2 | tr -d ' ')
+		size="$(lsblk "$part" -o SIZE | tail +2 | tr -d ' ')"
 
 		for d in $DEVICES; do
-			[ $part_dev = $d ] && parts["$d"]="${parts[$d]:+${parts[$d]}|}$size - [$part] -> ${name##*/}"
+			[ "$part_dev" = "$d" ] && parts["$d"]="${parts[$d]:+${parts[$d]}|}$size - [$part] -> ${name##*/}"
 		done
-	done <<< $(find $BY_LABEL -type l -printf "%p " -exec readlink -f {} \;)
+	done <<< "$(find "$BY_LABEL" -type l -printf "%p " -exec readlink -f {} \;)"
 fi
 
 if [ -d $BY_ID ];
 then
 	while IFS= read -r line;
 	do
-		name=$(printf "$line" | cut -d ' ' -f 1);
-		part=$(printf "$line" | cut -d ' ' -f 2);
-		part_dev=$(printf "$part" | sed s'/\([a-zA-Z]*\)[0-9]\+$/\1/')
+		name="$(printf "%s" "$line" | cut -d ' ' -f 1)"
+		part="$(printf "%s" "$line" | cut -d ' ' -f 2)"
+		part_dev="$(printf "%s" "$part" | sed s'/\([a-zA-Z]*\)[0-9]\+$/\1/')"
 
-		part_type=$(lsblk $part -o TYPE | tail +2 | head -1)
-		joined_uuid=$(lsblk $part -o UUID | tail +2 | tr -d '\n')
+		part_type="$(lsblk "$part" -o TYPE | tail +2 | head -1)"
+		joined_uuid="$(lsblk "$part" -o UUID | tail +2 | tr -d '\n')"
 
 		IFS=" "
-		(([ ${part_type,,} = "disk" ] && [ $(lsblk $part -o NAME | tail +3 | wc -l) -eq 0 ]) \
-			|| [ ${part_type,,} != "disk" ]) \
-			&& [ ! -z $joined_uuid ] && for d in $DEVICES;
+		( ( [ "${part_type,,}" = "disk" ] && [ "$(lsblk "$part" -o NAME | tail +3 | wc -l)" -eq 0 ] ) \
+			|| [ "${part_type,,}" != "disk" ] ) \
+			&& [ -n "$joined_uuid" ] && for d in $DEVICES;
 		do
-			if [ $part_dev = $d ];
+			if [ "$part_dev" = "$d" ];
 			then
 				have_part=0
 
 				IFS="|"
-				mount_point=$(lsblk $part -o MOUNTPOINT | tail +2 | tr -d '\n')
-				[ -z $mount_point ] && for dev in ${parts["$d"]};
+				mount_point="$(lsblk "$part" -o MOUNTPOINT | tail +2 | tr -d '\n')"
+				[ -z "$mount_point" ] && for dev in ${parts["$d"]};
 				do
 					have_part=0
 
 					IFS=" "
 					for c_part in $dev;
 					do
-						[ $part = $c_part ] && have_part=1 && break
+						[ "$part" = "$c_part" ] && have_part=1 && break
 					done
 
 					[ "$have_part" -eq 1 ] && break 
 
 				done
 
-				size=$(lsblk $part -o SIZE | tail +2 | tr -d ' ')
+				size="$(lsblk "$part" -o SIZE | tail +2 | tr -d ' ')"
 
-				[ -z $mount_point ] && [ "$have_part" -eq 0 ] && parts["$d"]="${parts[$d]:+${parts[$d]}|}$size - [$part] -> ${name##*/}"
+				[ -z "$mount_point" ] && [ "$have_part" -eq 0 ] && parts["$d"]="${parts[$d]:+${parts[$d]}|}$size - [$part] -> ${name##*/}"
 
 			fi
 		done
-	done <<< $(find $BY_ID -type l ! -name "wwn*" -printf "%p " -exec readlink -f {} \;)
+	done <<< "$(find $BY_ID -type l ! -name "wwn*" -printf "%p " -exec readlink -f {} \;)"
 fi
 
-IFS=$"\n"
-key=$(for key in ${!parts[@]}; do echo $key; done | dmenu -l 20)
+IFS=$'\n'
+key=$(for key in ${!parts[@]}; do echo $key; done | dmenu -p "Choose a disk" -l 20)
 
 IFS="|"
-dev=$(for dev in ${parts[$key]}; do echo $dev; done | dmenu -l 20 | sed 's/.*\[\(.*\)\].*/\1/')
+dev=$(for dev in ${parts[$key]}; do echo $dev; done | dmenu -p "Choose a partition" -l 20 | sed 's/.*\[\(.*\)\].*/\1/')
 
-echo "$dev"
-sudo echo lao
+mnt_point=$(find "$DMD" -mindepth 1 -maxdepth 1 -type d -printf "%P\n" |
+	while IFS= read -r line; do
+		printf "%s\n" "$line";
+	done | dmenu -p "Choose a mouting point (current dir: \"$DMD\")" -l 20)
+
+[ ! -d "$DMD/$mnt_point" ] && sudo mkdir -p "$DMD/$mnt_point"
+sudo mount "$dev" "$DMD/$mnt_point"
