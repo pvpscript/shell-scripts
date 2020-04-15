@@ -53,8 +53,8 @@ then
 		joined_uuid="$(lsblk "$part" -o UUID | tail +2 | tr -d '\n')"
 
 		IFS=" "
-		( ( [ "${part_type,,}" = "disk" ] && [ "$(lsblk "$part" -o NAME | tail +3 | wc -l)" -eq 0 ] ) \
-			|| [ "${part_type,,}" != "disk" ] ) \
+		{ { [ "${part_type,,}" = "disk" ] && [ "$(lsblk "$part" -o NAME | tail +3 | wc -l)" -eq 0 ]; } \
+			|| [ "${part_type,,}" != "disk" ]; } \
 			&& [ -n "$joined_uuid" ] && for d in $DEVICES;
 		do
 			if [ "$part_dev" = "$d" ];
@@ -63,12 +63,12 @@ then
 
 				IFS="|"
 				mount_point="$(lsblk "$part" -o MOUNTPOINT | tail +2 | tr -d '\n')"
-				[ -z "$mount_point" ] && for dev in ${parts["$d"]};
+				[ -z "$mount_point" ] && for device in ${parts["$d"]};
 				do
 					have_part=0
 
 					IFS=" "
-					for c_part in $dev;
+					for c_part in $device;
 					do
 						[ "$part" = "$c_part" ] && have_part=1 && break
 					done
@@ -87,15 +87,18 @@ then
 fi
 
 IFS=$'\n'
-key=$(for key in ${!parts[@]}; do echo $key; done | dmenu -p "Choose a disk" -l 20)
+key=$(for key in ${!parts[@]}; do echo "$key"; done | dmenu -p "Choose a disk" -l 20)
 
 IFS="|"
-dev=$(for dev in ${parts[$key]}; do echo $dev; done | dmenu -p "Choose a partition" -l 20 | sed 's/.*\[\(.*\)\].*/\1/')
+[ -n "$key" ] && dev=$(for dev in ${parts[$key]}; do echo "$dev"; done | dmenu -p "Choose a partition" -l 20 | sed 's/.*\[\(.*\)\].*/\1/')
 
-mnt_point=$(find "$DMD" -mindepth 1 -maxdepth 1 -type d -printf "%P\n" |
+[ -n "$dev" ] && mnt_point=$(find "$DMD" -mindepth 1 -maxdepth 1 -type d -printf "%P\n" |
 	while IFS= read -r line; do
 		printf "%s\n" "$line";
 	done | dmenu -p "Choose a mouting point (current dir: \"$DMD\")" -l 20)
 
-[ ! -d "$DMD/$mnt_point" ] && sudo mkdir -p "$DMD/$mnt_point"
-sudo mount "$dev" "$DMD/$mnt_point"
+if [ -n "$mnt_point" ];
+then
+	[ ! -d "$DMD/$mnt_point" ] && sudo mkdir -p "$DMD/$mnt_point"
+	sudo mount "$dev" "$DMD/$mnt_point"
+fi
