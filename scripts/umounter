@@ -1,14 +1,14 @@
 #!/bin/sh
-#
+
 # A script to dismount mounted partitions
 
 EXCLUDE="$(echo "${@:-sda}" | sed 's/\(sd.[0-9]*\) \+/(\1)|/g;s/\(sd.[0-9]*\)$/(\1)/g')"
 
-SIZE_PADDING=$(lsblk -rn --paths -o SIZE | awk '{ printf "%s\n", length($1) }' | sort -r -n | head -1)
-NAME_PADDING=$(lsblk -rn --paths -o NAME | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
+SIZE_PADDING=$(lsblk -prn -o SIZE | awk '{ printf "%s\n", length($1) }' | sort -r -n | head -1)
+NAME_PADDING=$(lsblk -prn -o NAME | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
 # length($1)+2 for the characters '[' and ']' in the printf below
 
-mntd=$(lsblk -rn --paths -o SIZE,NAME,MOUNTPOINT |
+mntd=$(lsblk -prn -o SIZE,NAME,MOUNTPOINT |
 	while IFS= read -r line;
 	do
 		set -- $line
