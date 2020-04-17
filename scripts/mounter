@@ -11,6 +11,8 @@
 #
 # Caveats: If the disk or partition label contains a '|' (pipe) it will brake
 # the names parser, since the pipe character is used as delimiter.
+#
+# TODO: Rewrite this whole thing using AWK.
 
 DMD=${1:-/mnt} # Default Mount Directory
 
