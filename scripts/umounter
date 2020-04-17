@@ -1,6 +1,11 @@
 #!/bin/sh
 
 # A script to dismount mounted partitions
+#
+# Caveats: Code not really maintainable.
+# If one wish to increase the number of fields of the 'lsblk' command,
+# make sure to also rebuild the regex on the 'sed' command below so it
+# matches the new fields
 
 EXCLUDE="$(echo "${@:-sda}" | sed 's/\(sd.[0-9]*\) \+/(\1)|/g;s/\(sd.[0-9]*\)$/(\1)/g')"
 
@@ -12,21 +17,18 @@ NAME_PADDING=$(lsblk -prn -o NAME,MOUNTPOINT | awk '{ if (length($2) > 0) printf
 mntd=$(lsblk -Ppn -o SIZE,NAME,MOUNTPOINT,LABEL |
 	while IFS= read -r line;
 	do
-		IFS=$'\n'
-		set -- $line
-		_1="$(echo "$1" | sed 's/\(.*\)="\(.*\)"/\2/')"
-		_2="$(echo "$2" | sed 's/\(.*\)="\(.*\)"/\2/')"
-		_3="$(echo "$3" | sed 's/\(.*\)="\(.*\)"/\2/')"
-		_4="$(echo "$4" | sed 's/\(.*\)="\(.*\)"/\2/')"
+		IFS='
+		'
+		set -- $(echo $line | sed 's/.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)"/\1\n\2\n\3\n\4/') 
 
-		if [ -n "$_3" ];
+		if [ -n "$3" ];
 		then
-			[ -n "$_4" ] && label="$(printf " (%b)" "$_4")" || label=""
-			echo "$_2" | grep -qiE "$EXCLUDE"
+			[ -n "$4" ] && label="$(printf " (%b)" "$4")" || label=""
+			echo "$2" | grep -qiE "$EXCLUDE"
 			[ $? -eq 1 ] && printf "%-*s - %-*s -> %-*s%s\n" \
-				$SIZE_PADDING "$_1" \
-				$NAME_PADDING "[$_2]" \
-				$MNT_PADDING "$_3" \
+				$SIZE_PADDING "$1" \
+				$NAME_PADDING "[$2]" \
+				$MNT_PADDING "$3" \
 				"$label"
 		fi
 	done | dmenu -p "Dismount a partition" -l 20)
