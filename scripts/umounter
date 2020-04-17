@@ -4,13 +4,15 @@
 
 EXCLUDE="$(echo "${@:-sda}" | sed 's/\(sd.[0-9]*\) \+/(\1)|/g;s/\(sd.[0-9]*\)$/(\1)/g')"
 
-SIZE_PADDING=$(lsblk -prn -o SIZE | awk '{ printf "%s\n", length($1) }' | sort -r -n | head -1)
-NAME_PADDING=$(lsblk -prn -o NAME | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
+SIZE_PADDING=$(lsblk -prn -o SIZE,MOUNTPOINT | awk '{ if (length($2) > 0) printf "%s\n", length($1) }' | sort -rn | head -1)
+MNT_PADDING=$(lsblk -prn -o MOUNTPOINT | awk '{ printf "%s\n", length($1) }' | sort -rn | head -1)
+NAME_PADDING=$(lsblk -prn -o NAME,MOUNTPOINT | awk '{ if (length($2) > 0) printf "%s\n", length($1)+2 }' | sort -rn | head -1)
 # length($1)+2 for the characters '[' and ']' in the printf below
 
 mntd=$(lsblk -Ppn -o SIZE,NAME,MOUNTPOINT,LABEL |
 	while IFS= read -r line;
 	do
+		IFS=$'\n'
 		set -- $line
 		_1="$(echo "$1" | sed 's/\(.*\)="\(.*\)"/\2/')"
 		_2="$(echo "$2" | sed 's/\(.*\)="\(.*\)"/\2/')"
@@ -19,9 +21,13 @@ mntd=$(lsblk -Ppn -o SIZE,NAME,MOUNTPOINT,LABEL |
 
 		if [ -n "$_3" ];
 		then
-			[ -n "$_4" ] && label="$(printf " %b" "$_4")" || label=""
+			[ -n "$_4" ] && label="$(printf " (%b)" "$_4")" || label=""
 			echo "$_2" | grep -qiE "$EXCLUDE"
-			[ $? -eq 1 ] && printf "%-*s - %-*s -> %s%s\n" $SIZE_PADDING "$_1" $NAME_PADDING "[$_2]" "$_3" "$label"
+			[ $? -eq 1 ] && printf "%-*s - %-*s -> %-*s%s\n" \
+				$SIZE_PADDING "$_1" \
+				$NAME_PADDING "[$_2]" \
+				$MNT_PADDING "$_3" \
+				"$label"
 		fi
 	done | dmenu -p "Dismount a partition" -l 20)
 
