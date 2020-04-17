@@ -2,10 +2,11 @@
 
 # A script to dismount mounted partitions
 #
-# Caveats: Code not really maintainable.
-# If one wish to increase the number of fields of the 'lsblk' command,
-# make sure to also rebuild the regex on the 'sed' command below so it
-# matches the new fields
+# Caveats: Code is pretty much unmaintainable. Shoutouts to field separators.
+# But look at the bright side... It's POSIX compliant! :)
+# So at the end of the day... It was worth it... right...? RIGHT???
+#
+# TODO: Rewrite this shite. Using more AWK this time.
 
 EXCLUDE="$(echo "${@:-sda}" | sed 's/\(sd.[0-9]*\) \+/(\1)|/g;s/\(sd.[0-9]*\)$/(\1)/g')"
 
@@ -19,16 +20,20 @@ mntd=$(lsblk -Ppn -o SIZE,NAME,MOUNTPOINT,LABEL |
 	do
 		IFS='
 		'
-		set -- $(echo $line | sed 's/.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)"/\1\n\2\n\3\n\4/') 
+		set -- $(echo "$line" | sed 's/.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)"/"\1"\n"\2"\n"\3"\n"\4"/')
+		_1="$(echo "$1" | sed 's/"\(.*\)"/\1/')"
+		_2="$(echo "$2" | sed 's/"\(.*\)"/\1/')"
+		_3="$(echo "$3" | sed 's/"\(.*\)"/\1/')"
+		_4="$(echo "$4" | sed 's/"\(.*\)"/\1/')"
 
-		if [ -n "$3" ];
+		if [ -n "$_3" ];
 		then
-			[ -n "$4" ] && label="$(printf " (%b)" "$4")" || label=""
-			echo "$2" | grep -qiE "$EXCLUDE"
+			[ -n "$_4" ] && label="$(printf " (%b)" "$_4")" || label=""
+			echo "$_2" | grep -qiE "$EXCLUDE"
 			[ $? -eq 1 ] && printf "%-*s - %-*s -> %-*s%s\n" \
-				$SIZE_PADDING "$1" \
-				$NAME_PADDING "[$2]" \
-				$MNT_PADDING "$3" \
+				$SIZE_PADDING "$_1" \
+				$NAME_PADDING "[$_2]" \
+				$MNT_PADDING "$_3" \
 				"$label"
 		fi
 	done | dmenu -p "Dismount a partition" -l 20)
