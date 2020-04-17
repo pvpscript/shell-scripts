@@ -8,14 +8,20 @@ SIZE_PADDING=$(lsblk -prn -o SIZE | awk '{ printf "%s\n", length($1) }' | sort -
 NAME_PADDING=$(lsblk -prn -o NAME | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
 # length($1)+2 for the characters '[' and ']' in the printf below
 
-mntd=$(lsblk -prn -o SIZE,NAME,MOUNTPOINT |
+mntd=$(lsblk -Ppn -o SIZE,NAME,MOUNTPOINT,LABEL |
 	while IFS= read -r line;
 	do
 		set -- $line
-		if [ -n "$3" ];
+		_1="$(echo "$1" | sed 's/\(.*\)="\(.*\)"/\2/')"
+		_2="$(echo "$2" | sed 's/\(.*\)="\(.*\)"/\2/')"
+		_3="$(echo "$3" | sed 's/\(.*\)="\(.*\)"/\2/')"
+		_4="$(echo "$4" | sed 's/\(.*\)="\(.*\)"/\2/')"
+
+		if [ -n "$_3" ];
 		then
-			echo "$2" | grep -qiE "$EXCLUDE"
-			[ $? -eq 1 ] && printf "%-*s - %-*s -> %s\n" $SIZE_PADDING "$1" $NAME_PADDING "[$2]" "$3"
+			[ -n "$_4" ] && label="$(printf " %b" "$_4")" || label=""
+			echo "$_2" | grep -qiE "$EXCLUDE"
+			[ $? -eq 1 ] && printf "%-*s - %-*s -> %s%s\n" $SIZE_PADDING "$_1" $NAME_PADDING "[$_2]" "$_3" "$label"
 		fi
 	done | dmenu -p "Dismount a partition" -l 20)
 
