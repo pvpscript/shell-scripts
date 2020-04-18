@@ -119,3 +119,5 @@ install $image_editors
 install $others
 nerdfonts
 ranger_devicons
+
+# OTHERS ON GIT: ueberzug, simple-mtpfs
