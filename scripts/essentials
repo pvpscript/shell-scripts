@@ -82,7 +82,7 @@ if [ ! -z $(command -v pacman) ]; then
 	other_languages="lua;ruby;perl"
 	workflow="tmux"
 	math="octave;r;qalculate"
-	media="scrot;ffmpeg;alsa-utils;mpv;mpd;mpc;ncmpcpp"
+	media="scrot;ffmpeg;ffmpegthumbnailer;alsa-utils;mpv;mpd;mpc;ncmpcpp"
 	image_editors="gimp;inkscape"
 	reader="zathura;zathura-pdf-mupdf;zathura-pdf-poppler"
 	others="light;calcurse;dunst;newsboat;sysstat;perl-image-exiftool;klavaro;python-pywal;fzf;acpid;acpi;w3m"
