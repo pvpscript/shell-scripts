@@ -85,7 +85,7 @@ if [ ! -z $(command -v pacman) ]; then
 	media="scrot;ffmpeg;alsa-utils;mpv;mpd;mpc;ncmpcpp"
 	image_editors="gimp;inkscape"
 	reader="zathura;zathura-pdf-mupdf;zathura-pdf-poppler"
-	others="light;calcurse;dunst;newsboat;sysstat;perl-image-exiftool;klavaro;python-pywal;fzf;acpid;acpi"
+	others="light;calcurse;dunst;newsboat;sysstat;perl-image-exiftool;klavaro;python-pywal;fzf;acpid;acpi;w3m"
 elif [ ! -z $(command -v apt) ]; then
 	echo Not done yet ; exit
        	primary="git;build-essential;manpages;manpages-dev;wget;bash-completion"
