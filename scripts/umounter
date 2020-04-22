@@ -21,19 +21,19 @@ mntd=$(lsblk -Ppn -o SIZE,NAME,MOUNTPOINT,LABEL |
 		IFS='
 		'
 		set -- $(echo "$line" | sed 's/.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)"/"\1"\n"\2"\n"\3"\n"\4"/')
-		_1="$(echo "$1" | sed 's/"\(.*\)"/\1/')"
-		_2="$(echo "$2" | sed 's/"\(.*\)"/\1/')"
-		_3="$(echo "$3" | sed 's/"\(.*\)"/\1/')"
-		_4="$(echo "$4" | sed 's/"\(.*\)"/\1/')"
+		size="$(echo "$1" | sed 's/"\(.*\)"/\1/')"
+		name="$(echo "$2" | sed 's/"\(.*\)"/\1/')"
+		mnt="$(echo "$3" | sed 's/"\(.*\)"/\1/')"
+		label="$(echo "$4" | sed 's/"\(.*\)"/\1/')"
 
-		if [ -n "$_3" ];
+		if [ -n "$mnt" ];
 		then
-			[ -n "$_4" ] && label="$(printf " (%b)" "$_4")" || label=""
-			echo "$_2" | grep -qiE "$EXCLUDE"
+			[ -n "$label" ] && label="$(printf " (%b)" "$label")" || label=""
+			echo "$name" | grep -qiE "$EXCLUDE"
 			[ $? -eq 1 ] && printf "%-*s - %-*s -> %-*s%s\n" \
-				$SIZE_PADDING "$_1" \
-				$NAME_PADDING "[$_2]" \
-				$MNT_PADDING "$_3" \
+				$SIZE_PADDING "$size" \
+				$NAME_PADDING "[$name]" \
+				$MNT_PADDING "$mnt" \
 				"$label"
 		fi
 	done | dmenu -p "Dismount a partition" -l 20)
