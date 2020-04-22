@@ -15,27 +15,43 @@ MNT_PADDING=$(lsblk -prn -o MOUNTPOINT | awk '{ printf "%s\n", length($1) }' | s
 NAME_PADDING=$(lsblk -prn -o NAME,MOUNTPOINT | awk '{ if (length($2) > 0) printf "%s\n", length($1)+2 }' | sort -rn | head -1)
 # length($1)+2 for the characters '[' and ']' in the printf below
 
-mntd=$(lsblk -Ppn -o SIZE,NAME,MOUNTPOINT,LABEL |
-	while IFS= read -r line;
-	do
-		IFS='
-		'
-		set -- $(echo "$line" | sed 's/.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)"/"\1"\n"\2"\n"\3"\n"\4"/')
-		size="$(echo "$1" | sed 's/"\(.*\)"/\1/')"
-		name="$(echo "$2" | sed 's/"\(.*\)"/\1/')"
-		mnt="$(echo "$3" | sed 's/"\(.*\)"/\1/')"
-		label="$(echo "$4" | sed 's/"\(.*\)"/\1/')"
+usb() {
+	lsblk -Ppn -o SIZE,NAME,MOUNTPOINT,LABEL | {
+		while IFS= read -r line;
+		do
+			IFS='
+			'
+			set -- $(echo "$line" | sed 's/.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)"/"\1"\n"\2"\n"\3"\n"\4"/')
+			size="$(echo "$1" | sed 's/"\(.*\)"/\1/')"
+			name="$(echo "$2" | sed 's/"\(.*\)"/\1/')"
+			mnt="$(echo "$3" | sed 's/"\(.*\)"/\1/')"
+			label="$(echo "$4" | sed 's/"\(.*\)"/\1/')"
 
-		if [ -n "$mnt" ];
-		then
-			[ -n "$label" ] && label="$(printf " (%b)" "$label")" || label=""
-			echo "$name" | grep -qiE "$EXCLUDE"
-			[ $? -eq 1 ] && printf "%-*s - %-*s -> %-*s%s\n" \
-				$SIZE_PADDING "$size" \
-				$NAME_PADDING "[$name]" \
-				$MNT_PADDING "$mnt" \
-				"$label"
-		fi
-	done | dmenu -p "Dismount a partition" -l 20)
+			if [ -n "$mnt" ];
+			then
+				[ -n "$label" ] && label="$(printf " (%b)" "$label")" || label=""
+				echo "$name" | grep -qiE "$EXCLUDE"
+				[ $? -eq 1 ] && printf "%-*s - %-*s -> %-*s%s\n" \
+					$SIZE_PADDING "$size" \
+					$NAME_PADDING "[$name]" \
+					$MNT_PADDING "$mnt" \
+					"$label"
+			fi
+		done
+	}
+}
+
+android() {
+	mp=$(cut /proc/mounts -d ' ' -f 2,3 | sed -n '/ .*mtpfs.*/p' | cut -d ' ' -f 1)
+	size=$(df -h --output=size /mnt/klasperino/ | tail -1 | sed 's/[[:blank:]]*//')
+
+	printf "[%s] (%s)" "$mp" "$size"
+}
+
+type="$(printf "USB\nANDROID" | dmenu -p "Dismount a partition")"
+case "$type" in
+	USB) mntd=$(usb | dmenu -p "Select a partition" -l 20) ;;
+	ANDROID) mntd=$(android | dmenu -p "Select a device" -l 20) ;;
+esac
 
 [ -n "$mntd" ] && sudo umount "$(echo "$mntd" | sed 's/.*\[\(.*\)\].*/\1/')"
