@@ -3,10 +3,6 @@
 # A script to dismount mounted partitions
 #
 # Caveats: Code is pretty much unmaintainable. Shoutouts to field separators.
-# But look at the bright side... It's POSIX compliant! :)
-# So at the end of the day... It was worth it... right...? RIGHT???
-#
-# TODO: Rewrite this shite. Using more AWK this time.
 
 EXCLUDE="$(echo "${@:-sda}" | sed 's/\(sd.[0-9]*\) \+/(\1)|/g;s/\(sd.[0-9]*\)$/(\1)/g')"
 
