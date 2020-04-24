@@ -7,7 +7,7 @@
 EXCLUDE="$(echo "${@:-sda}" | sed 's/\(sd.[0-9]*\) \+/(\1)|/g;s/\(sd.[0-9]*\)$/(\1)/g')"
 
 SIZE_PADDING=$(lsblk -prn -o SIZE,MOUNTPOINT | awk '{ if (length($2) > 0) printf "%s\n", length($1) }' | sort -rn | head -1)
-MNT_PADDING=$(lsblk -prn -o MOUNTPOINT | awk '{ printf "%s\n", length($1) }' | sort -rn | head -1)
+MNTP_PADDING=$(lsblk -prn -o MOUNTPOINT | awk '{ printf "%s\n", length($1) }' | sort -rn | head -1)
 NAME_PADDING=$(lsblk -prn -o NAME,MOUNTPOINT | awk '{ if (length($2) > 0) printf "%s\n", length($1)+2 }' | sort -rn | head -1)
 # length($1)+2 for the characters '[' and ']' in the printf below
 
@@ -18,20 +18,20 @@ usb() {
 			IFS='
 			'
 			set -- $(echo "$line" | sed 's/.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)" \+.*="\(.*\)"/"\1"\n"\2"\n"\3"\n"\4"/')
-			size="$(echo "$1" | sed 's/"\(.*\)"/\1/')"
-			name="$(echo "$2" | sed 's/"\(.*\)"/\1/')"
-			mnt="$(echo "$3" | sed 's/"\(.*\)"/\1/')"
-			label="$(echo "$4" | sed 's/"\(.*\)"/\1/')"
+			_size="$(echo "$1" | sed 's/"\(.*\)"/\1/')"
+			_name="$(echo "$2" | sed 's/"\(.*\)"/\1/')"
+			_mntp="$(echo "$3" | sed 's/"\(.*\)"/\1/')"
+			_labl="$(echo "$4" | sed 's/"\(.*\)"/\1/')"
 
-			if [ -n "$mnt" ];
+			if [ -n "$_mntp" ];
 			then
-				[ -n "$label" ] && label="$(printf " (%b)" "$label")" || label=""
-				echo "$name" | grep -qiE "$EXCLUDE"
+				[ -n "$_labl" ] && _labl="$(printf " (%b)" "$_labl")" || _labl=""
+				echo "$_name" | grep -qiE "$EXCLUDE"
 				[ $? -eq 1 ] && printf "%-*s - %-*s -> %-*s%s\n" \
-					$SIZE_PADDING "$size" \
-					$NAME_PADDING "[$name]" \
-					$MNT_PADDING "$mnt" \
-					"$label"
+					$SIZE_PADDING "$_size" \
+					$NAME_PADDING "[$_name]" \
+					$MNTP_PADDING "$_mntp" \
+					"$_labl"
 			fi
 		done
 	}
@@ -40,9 +40,9 @@ usb() {
 android() {
 	mp=$(cut /proc/mounts -d ' ' -f 2,3 | sed -n '/ .*mtpfs.*/p' | cut -d ' ' -f 1)
 	if [ -n "$mp" ]; then
-		size=$(df -h --output=size "$mp" | tail -1 | sed 's/[[:blank:]]*//')
+		_size=$(df -h --output=_size "$mp" | tail -1 | sed 's/[[:blank:]]*//')
 
-		printf "[%s] (%s)" "$mp" "$size"
+		printf "[%s] (%s)" "$mp" "$_size"
 	fi
 }
 
