@@ -17,8 +17,7 @@ usb() {
 
 			_name="$(echo "$1" | sed 's/"\(.*\)"/\1/')"
 			_size="$(echo "$2" | sed 's/"\(.*\)"/\1/')"
-			_labl="$(echo "$3" | sed 's/"\(.*\)"/\1/')"
-			_type="$(echo "$4" | sed 's/"\(.*\)"/\1/')"
+			_labl="$(echo "$3" | sed 's/"\(.*\)"/\1/')" _type="$(echo "$4" | sed 's/"\(.*\)"/\1/')"
 			_uuid="$(echo "$5" | sed 's/"\(.*\)"/\1/')"
 			_mntp="$(echo "$6" | sed 's/"\(.*\)"/\1/')"
 			
@@ -46,14 +45,33 @@ usb() {
 	}
 }
 
-#type=$(printf "USB\nANDROID" | dmenu -p "Select a device type to mount")
-#case "$type" in
-#	USB) mntp="$(usb | dmenu -p "Select a partition")"
-#		;;
-#	ANDROID)
-#		mntd="$(simple-mtpfs -l 2>/dev/null | dmenu -p "Select a device")"
-#		devno="$(echo $devno | sed 's/\(^[0-9]*\):.*/\1/')"
-#		sudo simple-mtpfs --device "$devno"
-#		;;
-#
-usb
+type=$(printf "USB\nANDROID" | dmenu -p "Select a device type to mount")
+case "$type" in
+	USB)
+		mntp="$(usb | dmenu -p "Select a partition" -l 20)"
+		part="$(echo $mntp | sed 's/[^"]*"\([^"]*\)".*/\1/')"
+		
+		[ -n "$part" ] && \
+		mnt_point=$(
+		find "$DMD" -mindepth 1 -maxdepth 1 -type d -printf "%P\n" | {
+			while IFS= read -r line;
+			do
+				if ! mountpoint -q -- "$DMD/$line";
+				then
+					printf "%s\n" "$line"
+				fi
+			done
+		} | dmenu -p "Choose a mounting point (current dir: \"$DMD\")" -l 20)
+
+		if [ -n "$mnt_point" ];
+		then
+			[ ! -d "$DMD/$mnt_point" ] && sudo mkdir -p "$DMD/$mnt_point"
+			sudo mount "$part" "$DMD/$mnt_point"
+		fi
+		;;
+	ANDROID)
+		mntd="$(simple-mtpfs -l 2>/dev/null | dmenu -p "Select a device")"
+		devno="$(echo $devno | sed 's/\(^[0-9]*\):.*/\1/')"
+		sudo simple-mtpfs --device "$devno"
+		;;
+esac
