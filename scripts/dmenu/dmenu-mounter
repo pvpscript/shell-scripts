@@ -45,6 +45,18 @@ usb() {
 	}
 }
 
+mnt_folders() {
+	find "$DMD" -mindepth 1 -maxdepth 1 -type d -printf "%P\n" | {
+		while IFS= read -r line;
+		do
+			if ! mountpoint -q -- "$DMD/$line";
+			then
+				printf "%s\n" "$line"
+			fi
+		done
+	}
+}
+
 type=$(printf "USB\nANDROID" | dmenu -p "Select a device type to mount")
 case "$type" in
 	USB)
@@ -52,6 +64,22 @@ case "$type" in
 		part="$(echo $mntp | sed 's/[^"]*"\([^"]*\)".*/\1/')"
 		
 		[ -n "$part" ] && \
+		mnt_point=$(
+			mnt_folders | \
+			dmenu -p "Choose a mounting point (current dir: \"$DMD\")" -l 20\
+		)
+
+		if [ -n "$mnt_point" ];
+		then
+			[ ! -d "$DMD/$mnt_point" ] && sudo mkdir -p "$DMD/$mnt_point"
+			sudo mount "$part" "$DMD/$mnt_point"
+		fi
+		;;
+	ANDROID)
+		mntd="$(simple-mtpfs -l 2>/dev/null | dmenu -p "Select a device" -l 20)"
+		devno="$(echo $devno | sed 's/\(^[0-9]*\):.*/\1/')"
+
+		[ -n "$devno" ] && \
 		mnt_point=$(
 		find "$DMD" -mindepth 1 -maxdepth 1 -type d -printf "%P\n" | {
 			while IFS= read -r line;
@@ -68,10 +96,6 @@ case "$type" in
 			[ ! -d "$DMD/$mnt_point" ] && sudo mkdir -p "$DMD/$mnt_point"
 			sudo mount "$part" "$DMD/$mnt_point"
 		fi
-		;;
-	ANDROID)
-		mntd="$(simple-mtpfs -l 2>/dev/null | dmenu -p "Select a device")"
-		devno="$(echo $devno | sed 's/\(^[0-9]*\):.*/\1/')"
 		sudo simple-mtpfs --device "$devno"
 		;;
 esac
