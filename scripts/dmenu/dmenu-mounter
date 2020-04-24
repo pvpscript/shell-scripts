@@ -77,25 +77,18 @@ case "$type" in
 		;;
 	ANDROID)
 		mntd="$(simple-mtpfs -l 2>/dev/null | dmenu -p "Select a device" -l 20)"
-		devno="$(echo $devno | sed 's/\(^[0-9]*\):.*/\1/')"
+		devno="$(echo $mntd | sed 's/\(^[0-9]*\):.*/\1/')"
 
 		[ -n "$devno" ] && \
 		mnt_point=$(
-		find "$DMD" -mindepth 1 -maxdepth 1 -type d -printf "%P\n" | {
-			while IFS= read -r line;
-			do
-				if ! mountpoint -q -- "$DMD/$line";
-				then
-					printf "%s\n" "$line"
-				fi
-			done
-		} | dmenu -p "Choose a mounting point (current dir: \"$DMD\")" -l 20)
+			mnt_folders | \
+			dmenu -p "Choose a mounting point (current dir: \"$DMD\")" -l 20\
+		)
 
 		if [ -n "$mnt_point" ];
 		then
 			[ ! -d "$DMD/$mnt_point" ] && sudo mkdir -p "$DMD/$mnt_point"
-			sudo mount "$part" "$DMD/$mnt_point"
+			sudo simple-mtpfs --device "$devno" "$DMD/$mnt_point" -o allow_other
 		fi
-		sudo simple-mtpfs --device "$devno"
 		;;
 esac
