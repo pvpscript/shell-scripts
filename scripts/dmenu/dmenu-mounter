@@ -55,7 +55,7 @@ mnt_folders() {
 				printf "%s\n" "$line"
 			fi
 		done
-	}
+	} | dmenu -p "Choose a mounting point (current dir: \"$DMD\")" -l 20
 }
 
 type=$(printf "USB\nANDROID" | dmenu -p "Select a device type to mount")
@@ -64,11 +64,7 @@ case "$type" in
 		mntp="$(usb | dmenu -p "Select a partition" -l 20)"
 		part="$(echo "$mntp" | sed 's/[^"]*"\([^"]*\)".*/\1/')"
 		
-		[ -n "$part" ] && \
-		mnt_point=$(
-			mnt_folders | \
-			dmenu -p "Choose a mounting point (current dir: \"$DMD\")" -l 20\
-		)
+		[ -n "$part" ] && mnt_point=$(mnt_folders)
 
 		if [ -n "$mnt_point" ];
 		then
@@ -80,11 +76,7 @@ case "$type" in
 		mntd="$(simple-mtpfs -l 2>/dev/null | dmenu -p "Select a device" -l 20)"
 		devno="$(echo "$mntd" | sed 's/\(^[0-9]*\):.*/\1/')"
 
-		[ -n "$devno" ] && \
-		mnt_point=$(
-			mnt_folders | \
-			dmenu -p "Choose a mounting point (current dir: \"$DMD\")" -l 20\
-		)
+		[ -n "$devno" ] && mnt_point=$(mnt_folders)
 
 		if [ -n "$mnt_point" ];
 		then
