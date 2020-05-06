@@ -34,11 +34,11 @@ usb() {
 					|| [ "$_type" = "disk" ] \
 					&& [ "$(lsblk "$_name" -rn -o NAME | wc -l)" -eq 1 ];
 				then
-					printf "%-*s - %-*s -> [%s] %-*s (%s)\n" \
+					printf "%-*s - %-*s -> [%s] %s (%s)\n" \
 						$SIZE_PADDING "$_size" \
 						$NAME_PADDING "\"$_name\"" \
 						"$_vndr" \
-						$MODL_PADDING "$_modl" \
+						"$_modl" \
 						"$_labl"
 				fi
 			fi
