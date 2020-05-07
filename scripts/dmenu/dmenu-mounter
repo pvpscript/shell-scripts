@@ -3,7 +3,7 @@
 DMD="${1:-/mnt}"
 
 SIZE_PADDING=$(lsblk -rpn -o SIZE | awk '{ printf "%s\n", length($1) }' | sort -r -n | head -1)
-MODL_PADDING=$(lsblk -rn -o MODEL | awk '{ print length($1) }' | sort -nr | head -1)
+# MODL_PADDING=$(lsblk -rn -o MODEL | awk '{ print length($1) }' | sort -nr | head -1)
 NAME_PADDING=$(lsblk -rpn -o NAME | awk '{ printf "%s\n", length($1)+2 }' | sort -r -n | head -1)
 # length($1)+2 for the quotes in the name variable below
 
