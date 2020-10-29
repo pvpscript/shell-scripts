@@ -17,10 +17,11 @@ printf "\n%s" "wish to continue? (y/n)" ; read op
 [ "$(printf $op | tr '[A-Z]' '[a-z]')" != "y" ] && exit 0
 
 #cp "$HOME/.tmux.conf" "$dir" # tmux config file
-cp "$HOME/.xinitrc" "$dir" # startx config file
-cp "$HOME/.profile" "$dir" # path configs and other variable definitions
-cp "$HOME/.xprofile" "$dir" # daemons to be run on startup 
+cp -iv "$HOME/.xinitrc" "$dir" # startx config file
+cp -iv "$HOME/.profile" "$dir" # path configs and other variable definitions
+cp -iv "$HOME/.xprofile" "$dir" # daemons to be run on startup 
+cp -iv "$HOME/.Xresources" "$dir" # config parameters for X applications
 #cp "$HOME/.zprofile" "$dir" # zsh startup config
-cp "$HOME/.bashrc" "$dir" # bash startup config
+cp -iv "$HOME/.bashrc" "$dir" # bash startup config
 
-cp -r "$HOME/.config" "$dir" # config files directory
+cp -ivr "$HOME/.config" "$dir" # config files directory
