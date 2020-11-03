@@ -15,4 +15,4 @@ bgloc="${XDG_CACHE_HOME:-$HOME/.cache/}/bg"
 
 [ -d "$1" ] && ln -sf "$(find "$(readlink -f "$1")" -iregex '.*.\(jpg\|jpeg\|png\|gif\)' -type f | shuf -n 1)" "$bgloc" && notify-send -i "$bgloc" "Random Wallpaper chosen."
 
-xwallpaper --zoom "$bgloc"
+xwallpaper --stretch "$bgloc"
