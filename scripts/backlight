@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Tiny script to increase and decrease the backlight by 5% that also
+# supports a 'on/off switch' type of action.
+
+BACKLIGHT_HANDLER=xbacklight
+FILE="$XDG_CACHE_HOME/.backlight-mem"
+
+case "$1" in
+	inc)
+		xbacklight +5% -time 1 -steps 1
+		;;
+	dec)
+		xbacklight -5% -time 1 -steps 1
+		;;
+	switch)
+		if [ -e $FILE ]; then
+			xbacklight -set $(cat $FILE)
+			rm -f $FILE
+		else
+			xbacklight -get > $FILE
+			xbacklight -set 0
+
+		fi
+		;;
+esac
