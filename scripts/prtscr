@@ -1,0 +1,33 @@
+#!/bin/sh
+
+action() {
+	dunstify --action="clip,Clipboard" --action="file,File" "Save"
+}
+
+prnt=$(dunstify --action="sel,Selection" --action="focus,Focused window" "Print screen")
+case $prnt in
+	sel)
+		case $(action) in
+			clip)
+				echo test
+				scrot -s -e "xclip -selection clipboard -t image/png -i \$f; rm \$f;"
+				;;
+			file)
+				echo test
+				scrot -s -e "mv \$f $SCREENSHOT_PATH/\$f;"
+				;;
+		esac
+		;;
+	focus)
+		case $(action) in
+			clip)
+				echo test
+				scrot -u -e "xclip -selection clipboard -t image/png -i \$f; rm \$f;"
+				;;
+			file)
+				echo test
+				scrot -u -e "mv \$f $SCREENSHOT_PATH/\$f;"
+				;;
+		esac
+		;;
+esac
