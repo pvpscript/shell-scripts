@@ -14,7 +14,7 @@ case $prnt in
 				;;
 			file)
 				echo test
-				scrot -s -e "mv \$f $SCREENSHOT_PATH/\$f;"
+				scrot -s -e "mv \$f $SCREENSHOTS_PATH/\$f;"
 				;;
 		esac
 		;;
@@ -26,7 +26,7 @@ case $prnt in
 				;;
 			file)
 				echo test
-				scrot -u -e "mv \$f $SCREENSHOT_PATH/\$f;"
+				scrot -u -e "mv \$f $SCREENSHOTS_PATH/\$f;"
 				;;
 		esac
 		;;
