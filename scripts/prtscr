@@ -1,19 +1,17 @@
 #!/bin/sh
 
 action() {
-	dunstify --action="clip,Clipboard" --action="file,File" "Save"
+	dunstify -t 0 --action="clip,Clipboard" --action="file,File" "Save"
 }
 
-prnt=$(dunstify --action="sel,Selection" --action="focus,Focused window" "Print screen")
+prnt=$(dunstify -t 0 --action="sel,Selection" --action="focus,Focused window" --action="whole,Whole screen" "Print screen")
 case $prnt in
 	sel)
 		case $(action) in
 			clip)
-				echo test
 				scrot -s -e "xclip -selection clipboard -t image/png -i \$f; rm \$f;"
 				;;
 			file)
-				echo test
 				scrot -s -e "mv \$f $SCREENSHOTS_PATH/\$f;"
 				;;
 		esac
@@ -21,12 +19,20 @@ case $prnt in
 	focus)
 		case $(action) in
 			clip)
-				echo test
 				scrot -u -e "xclip -selection clipboard -t image/png -i \$f; rm \$f;"
 				;;
 			file)
-				echo test
 				scrot -u -e "mv \$f $SCREENSHOTS_PATH/\$f;"
+				;;
+		esac
+		;;
+	whole)
+		case $(action) in
+			clip)
+				scrot -e "xclip -selection clipboard -t image/png -i \$f; rm \$f;"
+				;;
+			file)
+				scrot -e "mv \$f $SCREENSHOTS_PATH/\$f;"
 				;;
 		esac
 		;;
